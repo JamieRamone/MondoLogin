@@ -1,0 +1,72 @@
+							Mondo Login
+
+So what is this shit?
+
+	This is a clone of NeXT's login application. It's a lightweight, local-machine (non-networked), xdm replacement. Note that
+replacement does NOT imply "Drop-in". This app is also designed for the Mondo Development Environment and installs into its default
+directories which are incompatible with the Linux FHS, a much more common directory layout among other Linux distros. It also comes
+with a script that starts it up, which can be called by startup scripts as is in fact the case for the Mondo Development
+Environment.
+
+	Its meant to work with X, and depends on xinit being available. The script it comes with executes xinit, configured in such
+a way that itenters a loop launching this app, which waits for a user to log in. The app then launches whatever program the user has
+configured as their graphical shell, or /aux/WindowMaker/bin/wmaker if none found (this fallback can be easily changed in the source
+code). Then, when the user exits, it toes some cleanup and terminates, at which point xinit just launches a new instance of the app.
+
+	It's set up this way so that X never shuts down as in the case with xdm, or running xinit itself in a loop. This gives a
+much more pleasent presentation, as if all components of the GUI are seamlessly interlocked and not shoe-horned into the system. It
+feels much more like the original NeXT environment. Another big reason is that in my own system the nouveau driver crashes the
+kernel in certain conditions, not all of them predictable/reproducible. One that is ocurrs when QEmu is running fullscreen in a
+graphics mode and then switches to text. Since the Mondo Development Environment is designed to be run in an emulator (with QEmu
+being my best/only choice), and the fact that if crashes can ocurr on my chipset it's likey it can happen to others, it's also best
+to just avoid these kind of mode switches all together.
+
+So how do you install this shit?
+
+	As prevously mentioned this application is designed for the Mondo Development Environment, so that means gnustep-base
+(FoundationKit) 1.26.0, gnustep-gui and -back (AppKit) 0.27.0. If installing on another system and don't have these components, you
+have to install them first.
+
+	Once these prerequisites are met you just dounload and unpack the source code and install it by issuing the command: make &&
+make install in a command prompt. This'll install it into /aux/lib/GNUstep/Login.app, and the script to /etc/dmd. If you install it
+on another system and want to install it to a different ditectory, then you have to use the GNUSTEP_INSTALLATION_DIR e.g. make &&
+make GNUSTEP_INSTALLATION_DIR=/usr/etc/BootUp install. As for the script, you'll have to manually re-locate it to where you like.
+Alternatively, you can just build it and manually move both components to where you want them installed.
+
+	After installing them, if desired, the bootup script(s) need to be altered to call the dmd script, where ever you installed
+it to. In the Mondo Development environment there's nothing to do here as it's all set up for it (and it works with or without it).
+On a System-V init system (sigh!), you have to replace the call to xdm with one to dmd in the approptiate script. In SystemD based
+systems (BARF!!)...I haven't a clue. If you figure it out could ya' let me know?
+
+So how do you use this shit?
+
+	Since this app is called upon system start up you've nothing to do to start it: it's already running. So after the machine
+finishes booting up you'll see a small, rectangular window in the middle of the screen. It has two text fields, the top-most one
+being focused and awaiting input. The first (top-most) one is for inputing an account name, the other one is for the password.
+Towards the bottom right of the window there are two buttons labeled 'Restart' and 'Power'.
+
+In order to log in you start by typing in the name of an account on the system in the first text field. After doing that, you can
+move on to the next field by clicking on it with the mouse, pressing 'Tab', or pressing 'Enter'. Now you type the password, where
+you'll see the cursor move but no text input. This is not a bug, it's how it's intended to work. The password is, in fact, being
+entered. To log in, you type 'Enter'. If the password was incorrect, or the account is not enabled for logging in, or it doesn't
+exist, the window will move left-to-right, as if to "shake it's head" saying no. It then resets both fields so you can try again.
+If the credentials were correct the window will laterally shrin, as if "closing the curatins", and the graphical shell for that
+account will be started.
+
+You can also Reboot the computer or restart it by pressing the appropriate button. Which ever you press, you'll get a small
+confirmation panel where you can accept or cancel the action. If you accept the window will close in the same fashion as before and
+a new panel will appear in its place. This one looks exactly like the first one but without the text fields or the buttons. It just
+displays one message: "Shutting down the computer..." or "Restarting the computer...", depending on whether you clicked on the Power
+or Restart button respectively.
+
+Wait, how are you licensing this shit?
+
+This project is licensed under the terms of the third edition of the GNU General Public License. Under these terms you may use it
+however you please, make any number of copies, modify it, and redistribute it, modified or not, without having to ask permission.
+It also prohibits you from re-license it, so any modified copies you distribute are licensed under the same terms, and you HAVE to
+make the source code INCLUDING YOUR MODIFICATIONS available to those you give it away to. You of cours also have access to the
+initial source code, the one I provide as the projects author.
+
+Thats some kewl shit!
+
+I know, right?

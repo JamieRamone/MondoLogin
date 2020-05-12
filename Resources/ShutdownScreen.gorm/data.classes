@@ -1,0 +1,19 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    LoginWindow = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSWindow;
+    };
+    ShutdownPanelController = {
+	Actions = (
+	);
+	Outlets = (
+	    window,
+	    messageTextField
+	);
+	Super = NSObject;
+    };
+}

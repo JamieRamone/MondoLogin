@@ -1,0 +1,7 @@
+{
+	ApplicationName = Login;
+	NSExecutable = Login;
+	NSMainNibFile = Login.gorm;
+	NSPrincipalClass = NSApplication;
+	NSIcon = NeXT.tiff;
+}
