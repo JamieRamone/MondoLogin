@@ -18,6 +18,8 @@
  * <http://www.gnu.org/licenses/>
  *
  **********************************************************************************************************************************/
+#define GNU_SOURCE
+
 #include <stdio.h>
 #include <pwd.h>
 #include <utmp.h>
@@ -26,8 +28,6 @@
 #include <string.h>
 #include <signal.h>
 #include <math.h>
-
-#define GNU_SOURCE
 
 #include <unistd.h>
 
@@ -38,6 +38,7 @@
 #import <AppKit/NSAlert.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSCursor.h>
+#import <AppKit/NSEvent.h>
 #import <AppKit/NSRunningApplication.h>
 #import <AppKit/NSSecureTextField.h>
 #import <AppKit/NSScreen.h>
@@ -341,7 +342,7 @@ l2:	//NSLog ( @"User has an account on this system!" );
  *	which would mean they match in that case.
  */
 l3:	//NSLog ( @"Checking the given password against the stored one (%016X: %s)...", pw->pw_passwd, pw->pw_passwd );
-	criteria = ( strcmp ( pw->pw_passwd, _encrypt ( password )) == 0 );
+	criteria = ( strcmp ( pw->pw_passwd, crypt ( [password cString], pw->pw_passwd )) == 0 );
 	criteria = ( criteria || ( pw->pw_passwd [ 0 ] == '\0' && [password length] == 0 ));
 	target = Choose ( criteria, && l4, && fail );
 	goto * target;
@@ -376,13 +377,18 @@ fail:	[self _reset];
 
 - (void) powerButtonPressed: (NSButton *) sender
 {
+	register NSString			* message = nil;
 	register ShutdownPanelController	* controller = nil;
+	register char				* command = NULL;
 	register void				* target = NULL;
 	register NSInteger			result = -1;
 	register BOOL				criteria = NO;
 
 	NSLog ( @"Power button pressed, shutting system down..." );
-	result = [AlertPanelController alertPanelWithTitle: nil message: @"Are you sure you want to shut the computer down?" defaultButtonLabel: @"Yes" alternateButtonLabel: @"No" otherButtonLabel: nil];
+	criteria = (( [[NSApp currentEvent] modifierFlags] & NSAlternateKeyMask ) == 0 );
+	message = Choose ( criteria, @"Are you sure you want to power off the computer?", @"Are you sure you want to FULLY shut down the computer?" );
+	command = Choose ( criteria, (char *) "/etc/halt", (char *) "/etc/Halt" );
+	result = [AlertPanelController alertPanelWithTitle: nil message: message defaultButtonLabel: @"Yes" alternateButtonLabel: @"No" otherButtonLabel: nil];
 	criteria = ( result == NSAlertFirstButtonReturn );
 	target = Choose ( criteria, && in, && out );
 	goto * target;
@@ -392,7 +398,7 @@ in:	[self _closeWindow];
 	[controller retain];
 	[controller showWindow];
 	[NSCursor hide];
-	system ( "/etc/halt" );
+	system ( command );
 /*
  * If this point is reached, we've re-entered from a suspend-to-disk operation. In that case we reset the whole environment.
  */
@@ -405,13 +411,18 @@ out:	return;
 
 - (void) restartButtonPressed: (NSButton *) sender
 {
+	register NSString			* message = nil;
 	register ShutdownPanelController	* controller = nil;
+	register char				* command = NULL;
 	register void				* target = NULL;
 	register NSInteger			result = -1;
 	register BOOL				criteria = NO;
 
 	NSLog ( @"Restart button pressed, rebooting the computer..." );
-	result = [AlertPanelController alertPanelWithTitle: nil message: @"Are you sure you want to restart the computer?" defaultButtonLabel: @"Yes" alternateButtonLabel: @"No" otherButtonLabel: nil];
+	criteria = (( [[NSApp currentEvent] modifierFlags] & NSAlternateKeyMask ) == 0 );
+	message = Choose ( criteria, @"Are you sure you want to restart the computer?", @"Are you sure you want to FULLY restart the computer?" );
+	command = Choose ( criteria, (char *) "/etc/reboot", (char *) "/etc/Reboot" );
+	result = [AlertPanelController alertPanelWithTitle: nil message: message defaultButtonLabel: @"Yes" alternateButtonLabel: @"No" otherButtonLabel: nil];
 	criteria = ( result == NSAlertFirstButtonReturn );
 	target = Choose ( criteria, && in, && out );
 	goto * target;
@@ -421,7 +432,7 @@ in:	[self _closeWindow];
 	[controller retain];
 	[controller showWindow];
 	[NSCursor hide];
-	system ( "/etc/reboot" );
+	system ( command );
 /*
  * If this point is reached, we've re-entered from a suspend-to-disk operation. In that case we reset the whole environment.
  */

@@ -28,12 +28,12 @@ xrandr --output $(xrandr | head -n 2 | tail -n 1 | awk '{ print $1 }') --mode 19
 
 # Set the background color.
 
-xsetroot -solid "#505075" -cursor_name left_ptr
+xsetroot -solid "#505075" -cursor_name left_ptr &
 
 # Start the Login app.
 
 while true; do
-	echo "--------------------------------------------------------------------------------------------------------------------------------" >> /var/log/dmd.log 
+	echo "--------------------------------------------------------------------------------------------------------------------------------" >> /var/log/dm.log
 	/aux/lib/GNUstep/Login.app/Login
 done
 EOF
@@ -42,4 +42,11 @@ chmod 0700 $XINITRC
 EXTENSION=$(date -u --iso-8601=minutes)
 mv /var/log/dm.log /var/log/dm.log.$EXTENSION
 xz -9 /var/log/dm.log.$EXTENSION
-xinit -- -quiet -keeptty -novtswitch &>> /var/log/dm.log
+. /etc/GNUstep/GNUstep.sh
+
+while true; do
+	xinit -- -quiet -keeptty -novtswitch &>> /var/log/dm.log
+	echo "--------------------------------------------------------------------------------------------------------------------------------" >> /var/log/dm.log
+	echo "X server terminated! Restarting..." >> /var/log/dm.log
+	echo "--------------------------------------------------------------------------------------------------------------------------------" >> /var/log/dm.log
+done

@@ -64,15 +64,19 @@ include $(GNUSTEP_MAKEFILES)/config-noarch.make
 #
 # Scripts to run for parsing canonical names
 #
-CONFIG_GUESS_SCRIPT    = $(GNUSTEP_MAKEFILES)/config.guess
-CONFIG_SUB_SCRIPT      = $(GNUSTEP_MAKEFILES)/config.sub
-CONFIG_CPU_SCRIPT      = $(GNUSTEP_MAKEFILES)/cpu.sh
-CONFIG_VENDOR_SCRIPT   = $(GNUSTEP_MAKEFILES)/vendor.sh
-CONFIG_OS_SCRIPT       = $(GNUSTEP_MAKEFILES)/os.sh
-CLEAN_CPU_SCRIPT       = $(GNUSTEP_MAKEFILES)/clean_cpu.sh
-CLEAN_VENDOR_SCRIPT    = $(GNUSTEP_MAKEFILES)/clean_vendor.sh
-CLEAN_OS_SCRIPT        = $(GNUSTEP_MAKEFILES)/clean_os.sh
-REL_PATH_SCRIPT        = $(GNUSTEP_MAKEFILES)/relative_path.sh
+ifndef SCRIPTS_DIR
+	SCRIPTS_DIR=$(GNUSTEP_MAKEFILES)
+endif
+
+CONFIG_GUESS_SCRIPT    = $(SCRIPTS_DIR)/config.guess
+CONFIG_SUB_SCRIPT      = $(SCRIPTS_DIR)/config.sub
+CONFIG_CPU_SCRIPT      = $(SCRIPTS_DIR)/cpu.sh
+CONFIG_VENDOR_SCRIPT   = $(SCRIPTS_DIR)/vendor.sh
+CONFIG_OS_SCRIPT       = $(SCRIPTS_DIR)/os.sh
+CLEAN_CPU_SCRIPT       = $(SCRIPTS_DIR)/clean_cpu.sh
+CLEAN_VENDOR_SCRIPT    = $(SCRIPTS_DIR)/clean_vendor.sh
+CLEAN_OS_SCRIPT        = $(SCRIPTS_DIR)/clean_os.sh
+REL_PATH_SCRIPT        = $(SCRIPTS_DIR)/relative_path.sh
 
 #
 # Determine the compilation host and target

@@ -19,7 +19,7 @@
 #
 ####################################################################################################################################
 GNUSTEP_INSTALLATION_DIR=/aux/lib/GNUstep
-
+SCRIPTS_DIR=/etc/GNUstep
 include uncommon.make
 
 PACKAGE_NAME = Login
